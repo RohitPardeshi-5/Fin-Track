@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Assistant - FinTrack</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+    <nav class="bg-blue-600 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <a href="/" class="text-xl font-bold">FinTrack</a>
+                <div class="flex items-center space-x-4">
+                    <a href="/dashboard" class="hover:text-blue-200">Dashboard</a>
+                    <a href="/expenses" class="hover:text-blue-200">Expenses</a>
+                    <a href="/reports" class="hover:text-blue-200">Reports</a>
+                    <a href="/ai-chat" class="hover:text-blue-200 bg-blue-700 px-3 py-1 rounded">AI Assistant</a>
+                    <button onclick="logout()" class="flex items-center space-x-2 px-4 py-2 rounded-xl bg-red-100 text-red-700 hover:bg-red-200 transition-colors">
+                        <i class="fas fa-sign-out-alt"></i><span>Logout</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-4xl mx-auto px-4 py-8">
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+            <!-- Chat Header -->
+            <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-4">
+                        🤖
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold">FinTrack AI Assistant</h1>
+                        <p class="text-blue-100">Ask me anything about your expenses!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Messages -->
+            <div id="chat-messages" class="h-96 overflow-y-auto p-6 space-y-4">
+                <div class="flex items-start space-x-3">
+                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                        🤖
+                    </div>
+                    <div class="bg-blue-50 rounded-lg p-3 max-w-md">
+                        <p class="text-gray-800">Hi! I'm your FinTrack AI assistant 👋 I can help with your expenses AND answer any questions you have!</p>
+                        <p class="text-xs text-gray-500 mt-2">Ask about expenses: "What's my total spending?" or anything else: "Tell me about AI" or "How's the weather?"</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Input -->
+            <div class="border-t bg-gray-50 p-4">
+                <div class="flex space-x-3">
+                    <input 
+                        type="text" 
+                        id="chat-input" 
+                        placeholder="Ask about expenses or anything else..." 
+                        class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        onkeypress="handleKeyPress(event)"
+                    >
+                    <button 
+                        onclick="sendMessage()" 
+                        id="send-btn"
+                        class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                        Send
+                    </button>
+                </div>
+                
+                <!-- Quick Questions -->
+                <div class="mt-3 flex flex-wrap gap-2">
+                    <button onclick="askQuestion('What is my total spending?')" class="text-xs bg-blue-100 hover:bg-blue-200 px-3 py-1 rounded-full">
+                        💰 Total Spending
+                    </button>
+                    <button onclick="askQuestion('How much did I spend on food?')" class="text-xs bg-green-100 hover:bg-green-200 px-3 py-1 rounded-full">
+                        🍔 Food Expenses
+                    </button>
+                    <button onclick="askQuestion('Give me financial advice')" class="text-xs bg-purple-100 hover:bg-purple-200 px-3 py-1 rounded-full">
+                        💡 Financial Tips
+                    </button>
+                    <button onclick="askQuestion('What is artificial intelligence?')" class="text-xs bg-orange-100 hover:bg-orange-200 px-3 py-1 rounded-full">
+                        🤖 Ask Anything
+                    </button>
+                    <button onclick="askQuestion('Tell me a joke')" class="text-xs bg-pink-100 hover:bg-pink-200 px-3 py-1 rounded-full">
+                        😄 Fun Chat
+                    </button>
+                    <button onclick="askQuestion('How can I save money?')" class="text-xs bg-yellow-100 hover:bg-yellow-200 px-3 py-1 rounded-full">
+                        💸 Save Money
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+    function logout() {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/';
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Skip token check - allow direct access
+    });
+
+    function handleKeyPress(event) {
+        if (event.key === 'Enter') {
+            sendMessage();
+        }
+    }
+
+    function askQuestion(question) {
+        document.getElementById('chat-input').value = question;
+        sendMessage();
+    }
+
+    async function sendMessage() {
+        const input = document.getElementById('chat-input');
+        const sendBtn = document.getElementById('send-btn');
+        const question = input.value.trim();
+        
+        if (!question) return;
+
+        // Add user message to chat
+        addMessage(question, 'user');
+        
+        // Clear input and disable button
+        input.value = '';
+        sendBtn.disabled = true;
+        sendBtn.textContent = 'Thinking...';
+
+        try {
+            const response = await fetch('http://localhost:8086/api/v1/ai/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    question: question,
+                    user_id: 1
+                })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                addMessage(data.answer, 'ai');
+            } else {
+                addMessage("Sorry, I'm having trouble right now. Please try again later! 😅", 'ai');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            addMessage("I'm having connection issues. Make sure the AI service is running on port 8086! 🔧", 'ai');
+        } finally {
+            sendBtn.disabled = false;
+            sendBtn.textContent = 'Send';
+        }
+    }
+
+    function addMessage(message, sender) {
+        const messagesContainer = document.getElementById('chat-messages');
+        const messageDiv = document.createElement('div');
+        
+        if (sender === 'user') {
+            messageDiv.innerHTML = `
+                <div class="flex items-start space-x-3 justify-end">
+                    <div class="bg-blue-600 text-white rounded-lg p-3 max-w-md">
+                        <p>${message}</p>
+                    </div>
+                    <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                        👤
+                    </div>
+                </div>
+            `;
+        } else {
+            messageDiv.innerHTML = `
+                <div class="flex items-start space-x-3">
+                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                        🤖
+                    </div>
+                    <div class="bg-blue-50 rounded-lg p-3 max-w-md">
+                        <p class="text-gray-800 whitespace-pre-line">${message}</p>
+                        <p class="text-xs text-gray-500 mt-2">${new Date().toLocaleTimeString()}</p>
+                    </div>
+                </div>
+            `;
+        }
+        
+        messagesContainer.appendChild(messageDiv);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+    </script>
+</body>
+</html>

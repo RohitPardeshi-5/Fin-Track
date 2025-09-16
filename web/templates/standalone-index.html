@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinTrack - Expense Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .btn { transition: all 0.2s ease; }
+        .btn:hover { transform: translateY(-1px); }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <nav class="bg-white shadow-lg border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-blue-600">💰 FinTrack</h1>
+                </div>
+                <div class="flex space-x-3">
+                    <a href="/login" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 btn">
+                        Sign In
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto px-4 py-16">
+        <div class="text-center mb-16">
+            <h1 class="text-5xl font-bold text-gray-900 mb-6">
+                Take Control of Your 
+                <span class="text-blue-600">Finances</span>
+            </h1>
+            <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+                Track expenses, generate reports, and make smarter financial decisions with our powerful expense management platform.
+            </p>
+            
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="/login" class="bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 btn inline-block">
+                    Sign In to Continue
+                </a>
+            </div>
+        </div>
+        
+        <div class="grid md:grid-cols-3 gap-8 mb-16">
+            <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+                <div class="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center mb-6">
+                    <span class="text-2xl">📊</span>
+                </div>
+                <h3 class="text-xl font-bold mb-4">Smart Tracking</h3>
+                <p class="text-gray-600">Automatically categorize and track your expenses with intelligent insights and real-time analytics.</p>
+            </div>
+            
+            <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+                <div class="w-16 h-16 bg-green-100 rounded-lg flex items-center justify-center mb-6">
+                    <span class="text-2xl">📈</span>
+                </div>
+                <h3 class="text-xl font-bold mb-4">Detailed Reports</h3>
+                <p class="text-gray-600">Generate comprehensive monthly reports and visualize your spending patterns with beautiful charts.</p>
+            </div>
+            
+            <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+                <div class="w-16 h-16 bg-purple-100 rounded-lg flex items-center justify-center mb-6">
+                    <span class="text-2xl">🔒</span>
+                </div>
+                <h3 class="text-xl font-bold mb-4">Bank-Level Security</h3>
+                <p class="text-gray-600">Your financial data is protected with enterprise-grade encryption and security protocols.</p>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-xl p-8 md:p-12">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h2 class="text-3xl font-bold mb-6">Ready to get started?</h2>
+                    <p class="text-gray-600 mb-8">Join thousands of users who have taken control of their finances with FinTrack.</p>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center">
+                            <span class="text-green-500 mr-3">✓</span>
+                            <span>Free 30-day trial</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-green-500 mr-3">✓</span>
+                            <span>No credit card required</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-green-500 mr-3">✓</span>
+                            <span>Cancel anytime</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <div class="bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl p-8 text-white">
+                        <h3 class="text-2xl font-bold mb-4">Start Today</h3>
+                        <p class="mb-6">Create your account and start tracking expenses in minutes.</p>
+                        <a href="/login" class="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 btn inline-block">
+                            Sign In
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-gray-900 text-white py-12 mt-20">
+        <div class="max-w-6xl mx-auto px-4 text-center">
+            <h3 class="text-xl font-bold mb-4">FinTrack</h3>
+            <p class="text-gray-400">Your trusted expense management solution</p>
+        </div>
+    </footer>
+</body>
+</html>

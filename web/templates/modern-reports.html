@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports - FinTrack</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .glass-effect { backdrop-filter: blur(10px); background: rgba(255, 255, 255, 0.1); }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        .animate-fade-in { animation: fadeIn 0.6s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .report-card { background: linear-gradient(145deg, #ffffff, #f8fafc); }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-purple-50 via-white to-pink-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="glass-effect border-b border-white/20 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 gradient-bg rounded-xl flex items-center justify-center">
+                        <i class="fas fa-chart-line text-white text-lg"></i>
+                    </div>
+                    <h1 class="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">FinTrack</h1>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <a href="/dashboard" class="flex items-center space-x-2 px-4 py-2 rounded-xl hover:bg-gray-100 text-gray-700 transition-colors">
+                        <i class="fas fa-home"></i><span>Dashboard</span>
+                    </a>
+                    <a href="/expenses" class="flex items-center space-x-2 px-4 py-2 rounded-xl hover:bg-gray-100 text-gray-700 transition-colors">
+                        <i class="fas fa-receipt"></i><span>Expenses</span>
+                    </a>
+                    <a href="/reports" class="flex items-center space-x-2 px-4 py-2 rounded-xl bg-purple-100 text-purple-700 font-medium">
+                        <i class="fas fa-chart-bar"></i><span>Reports</span>
+                    </a>
+                    <a href="/ai-chat" class="flex items-center space-x-2 px-4 py-2 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 transition-all">
+                        <i class="fas fa-robot"></i><span>AI Assistant</span>
+                    </a>
+                    <button onclick="logout()" class="flex items-center space-x-2 px-4 py-2 rounded-xl bg-red-100 text-red-700 hover:bg-red-200 transition-colors">
+                        <i class="fas fa-sign-out-alt"></i><span>Logout</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-6 py-8">
+        <!-- Header -->
+        <div class="animate-fade-in mb-8">
+            <div class="flex justify-between items-center mb-2">
+                <h1 class="text-4xl font-bold text-gray-800">Financial Reports</h1>
+                <button onclick="generateReport()" class="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-600 text-white rounded-xl hover:from-purple-600 hover:to-pink-700 transition-all duration-300 shadow-lg hover:shadow-xl">
+                    <i class="fas fa-chart-pie mr-2"></i>Generate Report
+                </button>
+            </div>
+            <p class="text-gray-600 text-lg">Analyze your spending patterns and financial insights</p>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 animate-fade-in">
+            <div class="report-card rounded-2xl p-6 shadow-lg card-hover border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm font-medium">Total Expenses</p>
+                        <p class="text-3xl font-bold text-gray-800" id="monthly-total">0.00</p>
+                    </div>
+                    <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-wallet text-white text-xl"></i>
+                    </div>
+                </div>
+                <div class="mt-4 flex items-center text-sm">
+                    <span class="text-blue-500 font-medium">Monthly total</span>
+                </div>
+            </div>
+
+            <div class="report-card rounded-2xl p-6 shadow-lg card-hover border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm font-medium">Transactions</p>
+                        <p class="text-3xl font-bold text-gray-800" id="monthly-count">0</p>
+                    </div>
+                    <div class="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-list text-white text-xl"></i>
+                    </div>
+                </div>
+                <div class="mt-4 flex items-center text-sm">
+                    <span class="text-green-500 font-medium">Total count</span>
+                </div>
+            </div>
+
+            <div class="report-card rounded-2xl p-6 shadow-lg card-hover border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm font-medium">Average/Transaction</p>
+                        <p class="text-3xl font-bold text-gray-800" id="monthly-average">0.00</p>
+                    </div>
+                    <div class="w-12 h-12 bg-gradient-to-br from-purple-400 to-purple-600 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-calculator text-white text-xl"></i>
+                    </div>
+                </div>
+                <div class="mt-4 flex items-center text-sm">
+                    <span class="text-purple-500 font-medium">Per transaction</span>
+                </div>
+            </div>
+
+            <div class="report-card rounded-2xl p-6 shadow-lg card-hover border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm font-medium">Categories</p>
+                        <p class="text-3xl font-bold text-gray-800" id="category-count">0</p>
+                    </div>
+                    <div class="w-12 h-12 bg-gradient-to-br from-orange-400 to-orange-600 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-tags text-white text-xl"></i>
+                    </div>
+                </div>
+                <div class="mt-4 flex items-center text-sm">
+                    <span class="text-orange-500 font-medium">Active categories</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="grid lg:grid-cols-2 gap-8 mb-8 animate-fade-in">
+            <!-- Category Breakdown Chart -->
+            <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-bold text-gray-800">Category Breakdown</h3>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-3 h-3 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full"></div>
+                        <span class="text-sm text-gray-600">Spending Distribution</span>
+                    </div>
+                </div>
+                <div class="h-64">
+                    <canvas id="categoryChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Top Categories -->
+            <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+                <h3 class="text-xl font-bold text-gray-800 mb-6">Top Spending Categories</h3>
+                <div id="top-categories" class="space-y-4">
+                    <div class="flex items-center justify-center py-12 text-gray-400">
+                        <div class="text-center">
+                            <i class="fas fa-chart-pie text-4xl mb-3"></i>
+                            <p>No data available</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Generated Reports -->
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 animate-fade-in">
+            <div class="px-6 py-4 border-b border-gray-100">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xl font-bold text-gray-800">Generated Reports</h3>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-2 h-2 bg-green-400 rounded-full"></div>
+                        <span class="text-sm text-gray-600">Report History</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Report ID</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Type</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Period</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Generated</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reports-table" class="divide-y divide-gray-100">
+                        <tr>
+                            <td colspan="5" class="px-6 py-12 text-center text-gray-500">
+                                <div class="flex flex-col items-center">
+                                    <i class="fas fa-file-alt text-4xl text-gray-300 mb-3"></i>
+                                    <p class="text-lg font-medium">No reports generated yet</p>
+                                    <p class="text-sm">Click "Generate Report" to create your first report</p>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- AI Insights -->
+        <div class="mt-8 bg-gradient-to-r from-purple-500 to-pink-600 rounded-2xl p-8 text-white animate-fade-in">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-2xl font-bold mb-2">Get AI-Powered Insights</h3>
+                    <p class="text-purple-100">Ask our AI assistant about your spending patterns and get personalized advice</p>
+                </div>
+                <button onclick="window.location.href='/ai-chat'" class="px-6 py-3 bg-white text-purple-600 rounded-xl font-semibold hover:bg-gray-50 transition-colors">
+                    <i class="fas fa-robot mr-2"></i>Ask AI Assistant
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+    let categoryChart;
+
+    function logout() {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadReports();
+        loadExpenseSummary();
+    });
+
+    async function loadReports() {
+        try {
+            const response = await fetch('http://localhost:8003/api/v1/reports');
+            if (response.ok) {
+                const data = await response.json();
+                renderReports(data.reports || []);
+            }
+        } catch (error) {
+            console.error('Error loading reports:', error);
+        }
+    }
+
+    async function loadExpenseSummary() {
+        try {
+            const response = await fetch('http://localhost:8002/api/v1/expenses');
+            if (response.ok) {
+                const data = await response.json();
+                const expenses = data.expenses || [];
+                updateMonthlySummary(expenses);
+                updateTopCategories(expenses);
+                updateCategoryChart(expenses);
+            }
+        } catch (error) {
+            console.error('Error loading expenses:', error);
+        }
+    }
+
+    function updateMonthlySummary(expenses) {
+        const now = new Date();
+        const currentMonth = expenses.filter(exp => {
+            const expDate = new Date(exp.date);
+            return expDate.getMonth() === now.getMonth() && expDate.getFullYear() === now.getFullYear();
+        });
+        
+        const total = currentMonth.reduce((sum, exp) => sum + exp.amount, 0);
+        const count = currentMonth.length;
+        const average = count > 0 ? total / count : 0;
+        const categories = [...new Set(expenses.map(exp => exp.category))];
+        
+        document.getElementById('monthly-total').textContent = total.toFixed(2);
+        document.getElementById('monthly-count').textContent = count;
+        document.getElementById('monthly-average').textContent = average.toFixed(2);
+        document.getElementById('category-count').textContent = categories.length;
+    }
+
+    function updateTopCategories(expenses) {
+        const categoryTotals = {};
+        expenses.forEach(exp => {
+            categoryTotals[exp.category] = (categoryTotals[exp.category] || 0) + exp.amount;
+        });
+        
+        const sortedCategories = Object.entries(categoryTotals)
+            .sort(([,a], [,b]) => b - a)
+            .slice(0, 5);
+        
+        const container = document.getElementById('top-categories');
+        
+        if (sortedCategories.length > 0) {
+            container.innerHTML = sortedCategories.map(([category, total], index) => `
+                <div class="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl hover:from-gray-100 hover:to-gray-200 transition-all">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-gradient-to-br from-indigo-400 to-purple-500 rounded-lg flex items-center justify-center text-white font-bold text-sm">
+                            ${index + 1}
+                        </div>
+                        <div>
+                            <p class="font-semibold text-gray-800">${category}</p>
+                            <p class="text-sm text-gray-500">${getCategoryIcon(category)} Category</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-bold text-gray-800">${total.toFixed(2)}</p>
+                        <p class="text-sm text-gray-500">${((total / expenses.reduce((sum, exp) => sum + exp.amount, 0)) * 100).toFixed(1)}%</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
+
+    function updateCategoryChart(expenses) {
+        const categoryTotals = {};
+        expenses.forEach(exp => {
+            categoryTotals[exp.category] = (categoryTotals[exp.category] || 0) + exp.amount;
+        });
+
+        const ctx = document.getElementById('categoryChart').getContext('2d');
+        
+        if (categoryChart) categoryChart.destroy();
+        
+        categoryChart = new Chart(ctx, {
+            type: 'polarArea',
+            data: {
+                labels: Object.keys(categoryTotals),
+                datasets: [{
+                    data: Object.values(categoryTotals),
+                    backgroundColor: [
+                        'rgba(99, 102, 241, 0.8)',
+                        'rgba(139, 92, 246, 0.8)',
+                        'rgba(236, 72, 153, 0.8)',
+                        'rgba(245, 158, 11, 0.8)',
+                        'rgba(16, 185, 129, 0.8)',
+                        'rgba(59, 130, 246, 0.8)',
+                        'rgba(239, 68, 68, 0.8)',
+                        'rgba(107, 114, 128, 0.8)'
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { padding: 20, usePointStyle: true }
+                    }
+                }
+            }
+        });
+    }
+
+    function renderReports(reports) {
+        const tbody = document.getElementById('reports-table');
+        
+        if (reports.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="5" class="px-6 py-12 text-center text-gray-500">
+                        <div class="flex flex-col items-center">
+                            <i class="fas fa-file-alt text-4xl text-gray-300 mb-3"></i>
+                            <p class="text-lg font-medium">No reports generated yet</p>
+                            <p class="text-sm">Click "Generate Report" to create your first report</p>
+                        </div>
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+        
+        tbody.innerHTML = reports.map(report => `
+            <tr class="hover:bg-gray-50 transition-colors">
+                <td class="px-6 py-4">
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 bg-gradient-to-br from-purple-400 to-pink-500 rounded-lg flex items-center justify-center mr-3">
+                            <span class="text-white font-bold text-sm">${report.id}</span>
+                        </div>
+                        <span class="font-medium text-gray-800">#${report.id}</span>
+                    </div>
+                </td>
+                <td class="px-6 py-4">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800">
+                        <i class="fas fa-chart-pie mr-1"></i>${report.type || 'Monthly'}
+                    </span>
+                </td>
+                <td class="px-6 py-4 font-medium text-gray-800">${report.period || 'Current Month'}</td>
+                <td class="px-6 py-4 text-gray-600">${new Date(report.created_at).toLocaleDateString()}</td>
+                <td class="px-6 py-4">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                        <i class="fas fa-check-circle mr-1"></i>${report.status || 'Completed'}
+                    </span>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    async function generateReport() {
+        const button = event.target;
+        const originalText = button.innerHTML;
+        
+        button.disabled = true;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Generating...';
+        
+        try {
+            const response = await fetch('http://localhost:8003/api/v1/reports/monthly', {
+                method: 'GET'
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                // Show success notification
+                showNotification('Report generated successfully!', 'success');
+                loadReports();
+            } else {
+                showNotification('Failed to generate report. Please try again.', 'error');
+            }
+        } catch (error) {
+            console.error('Error generating report:', error);
+            showNotification('Network error. Please try again.', 'error');
+        } finally {
+            button.disabled = false;
+            button.innerHTML = originalText;
+        }
+    }
+
+    function getCategoryIcon(category) {
+        const icons = {
+            'Food': '🍔', 'Transport': '🚗', 'Shopping': '🛍️',
+            'Entertainment': '🎬', 'Health': '🏥', 'Education': '📚',
+            'cloths': '👕', 'food': '🍔'
+        };
+        return icons[category] || '📦';
+    }
+
+    function showNotification(message, type) {
+        const notification = document.createElement('div');
+        notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg text-white font-medium z-50 ${
+            type === 'success' ? 'bg-green-500' : 'bg-red-500'
+        }`;
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
+    </script>
+</body>
+</html>

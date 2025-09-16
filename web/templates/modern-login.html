@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - FinTrack</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .glass-effect { backdrop-filter: blur(20px); background: rgba(255, 255, 255, 0.25); }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .floating-animation { animation: float 6s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-20px); } }
+        .slide-in { animation: slideIn 0.8s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(-50px); } to { opacity: 1; transform: translateX(0); } }
+        .input-focus { transition: all 0.3s ease; }
+        .input-focus:focus { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 overflow-hidden">
+    <!-- Animated Background Elements -->
+    <div class="absolute inset-0 overflow-hidden">
+        <div class="absolute -top-40 -right-40 w-80 h-80 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 floating-animation"></div>
+        <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-yellow-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 floating-animation" style="animation-delay: 2s;"></div>
+        <div class="absolute top-40 left-40 w-80 h-80 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 floating-animation" style="animation-delay: 4s;"></div>
+    </div>
+
+    <div class="relative min-h-screen flex items-center justify-center px-4">
+        <div class="max-w-md w-full">
+            <!-- Logo Section -->
+            <div class="text-center mb-8 slide-in">
+                <div class="inline-flex items-center justify-center w-20 h-20 bg-white/20 backdrop-blur-lg rounded-2xl mb-4">
+                    <i class="fas fa-chart-line text-3xl text-white"></i>
+                </div>
+                <h1 class="text-4xl font-bold text-white mb-2">Welcome Back</h1>
+                <p class="text-white/80 text-lg">Sign in to your FinTrack account</p>
+            </div>
+
+            <!-- Login Form -->
+            <div class="glass-effect rounded-3xl p-8 shadow-2xl border border-white/20 slide-in" style="animation-delay: 0.2s;">
+                <form id="login-form" class="space-y-6">
+                    <!-- Email Input -->
+                    <div class="space-y-2">
+                        <label class="block text-white/90 text-sm font-semibold">Email Address</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <i class="fas fa-envelope text-white/60"></i>
+                            </div>
+                            <input 
+                                type="email" 
+                                id="email" 
+                                required 
+                                class="input-focus w-full pl-12 pr-4 py-4 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent"
+                                placeholder="Enter your email"
+                            >
+                        </div>
+                    </div>
+
+                    <!-- Password Input -->
+                    <div class="space-y-2">
+                        <label class="block text-white/90 text-sm font-semibold">Password</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <i class="fas fa-lock text-white/60"></i>
+                            </div>
+                            <input 
+                                type="password" 
+                                id="password" 
+                                required 
+                                class="input-focus w-full pl-12 pr-12 py-4 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent"
+                                placeholder="Enter your password"
+                            >
+                            <button type="button" onclick="togglePassword()" class="absolute inset-y-0 right-0 pr-4 flex items-center">
+                                <i id="password-icon" class="fas fa-eye text-white/60 hover:text-white transition-colors"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Remember Me & Forgot Password -->
+                    <div class="flex items-center justify-between">
+                        <label class="flex items-center">
+                            <input type="checkbox" class="w-4 h-4 text-purple-600 bg-white/10 border-white/20 rounded focus:ring-purple-500">
+                            <span class="ml-2 text-white/80 text-sm">Remember me</span>
+                        </label>
+                        <a href="#" class="text-white/80 hover:text-white text-sm font-medium transition-colors">Forgot password?</a>
+                    </div>
+
+                    <!-- Sign In Button -->
+                    <button 
+                        type="submit" 
+                        class="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-2xl"
+                    >
+                        <i class="fas fa-sign-in-alt mr-2"></i>Sign In
+                    </button>
+                </form>
+
+                <!-- Error Message -->
+                <div id="error-message" class="mt-4 p-4 bg-red-500/20 border border-red-500/30 text-red-200 rounded-xl hidden">
+                    <i class="fas fa-exclamation-circle mr-2"></i>
+                    <span id="error-text"></span>
+                </div>
+
+                <!-- Divider -->
+                <div class="my-6 flex items-center">
+                    <div class="flex-1 border-t border-white/20"></div>
+                    <span class="px-4 text-white/60 text-sm">or</span>
+                    <div class="flex-1 border-t border-white/20"></div>
+                </div>
+
+                <!-- Social Login -->
+                <div class="space-y-3">
+                    <button class="w-full bg-white/10 hover:bg-white/20 text-white font-medium py-3 px-4 rounded-xl transition-all duration-300 border border-white/20">
+                        <i class="fab fa-google mr-2"></i>Continue with Google
+                    </button>
+                    <button class="w-full bg-white/10 hover:bg-white/20 text-white font-medium py-3 px-4 rounded-xl transition-all duration-300 border border-white/20">
+                        <i class="fab fa-github mr-2"></i>Continue with GitHub
+                    </button>
+                </div>
+
+                <!-- Sign Up Link -->
+                <div class="mt-6 text-center">
+                    <p class="text-white/80">
+                        Don't have an account? 
+                        <a href="/register" class="text-white font-semibold hover:text-purple-200 transition-colors">Sign up</a>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="text-center mt-8 slide-in" style="animation-delay: 0.4s;">
+                <p class="text-white/60 text-sm">
+                    © 2024 FinTrack. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    function togglePassword() {
+        const passwordInput = document.getElementById('password');
+        const passwordIcon = document.getElementById('password-icon');
+        
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            passwordIcon.className = 'fas fa-eye-slash text-white/60 hover:text-white transition-colors';
+        } else {
+            passwordInput.type = 'password';
+            passwordIcon.className = 'fas fa-eye text-white/60 hover:text-white transition-colors';
+        }
+    }
+
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        
+        // Hide previous errors
+        document.getElementById('error-message').classList.add('hidden');
+        
+        try {
+            const response = await fetch('http://localhost:8081/api/v1/users/login', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({email, password})
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(data.user));
+                
+                // Success animation
+                const button = e.target.querySelector('button[type="submit"]');
+                button.innerHTML = '<i class="fas fa-check mr-2"></i>Success!';
+                button.className = button.className.replace('from-purple-500 to-pink-500', 'from-green-500 to-green-600');
+                
+                setTimeout(() => {
+                    window.location.href = '/dashboard';
+                }, 1000);
+            } else {
+                showError(data.error || 'Login failed');
+            }
+        } catch (error) {
+            showError('Network error. Please try again.');
+        }
+    });
+
+    function showError(message) {
+        document.getElementById('error-text').textContent = message;
+        document.getElementById('error-message').classList.remove('hidden');
+    }
+    </script>
+</body>
+</html>

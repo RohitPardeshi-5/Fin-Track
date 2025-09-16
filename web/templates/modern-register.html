@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - FinTrack</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .glass-effect { backdrop-filter: blur(20px); background: rgba(255, 255, 255, 0.25); }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .floating-animation { animation: float 6s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-20px); } }
+        .slide-in { animation: slideIn 0.8s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
+        .input-focus { transition: all 0.3s ease; }
+        .input-focus:focus { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .strength-weak { background: linear-gradient(90deg, #ef4444 0%, #f87171 100%); }
+        .strength-medium { background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 100%); }
+        .strength-strong { background: linear-gradient(90deg, #10b981 0%, #34d399 100%); }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-emerald-900 via-teal-900 to-cyan-800 overflow-hidden">
+    <!-- Animated Background Elements -->
+    <div class="absolute inset-0 overflow-hidden">
+        <div class="absolute -top-40 -right-40 w-80 h-80 bg-emerald-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 floating-animation"></div>
+        <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-cyan-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 floating-animation" style="animation-delay: 2s;"></div>
+        <div class="absolute top-40 left-40 w-80 h-80 bg-teal-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 floating-animation" style="animation-delay: 4s;"></div>
+    </div>
+
+    <div class="relative min-h-screen flex items-center justify-center px-4 py-8">
+        <div class="max-w-md w-full">
+            <!-- Logo Section -->
+            <div class="text-center mb-8 slide-in">
+                <div class="inline-flex items-center justify-center w-20 h-20 bg-white/20 backdrop-blur-lg rounded-2xl mb-4">
+                    <i class="fas fa-user-plus text-3xl text-white"></i>
+                </div>
+                <h1 class="text-4xl font-bold text-white mb-2">Join FinTrack</h1>
+                <p class="text-white/80 text-lg">Create your account and start managing finances</p>
+            </div>
+
+            <!-- Registration Form -->
+            <div class="glass-effect rounded-3xl p-8 shadow-2xl border border-white/20 slide-in" style="animation-delay: 0.2s;">
+                <form id="register-form" class="space-y-6">
+                    <!-- Name Input -->
+                    <div class="space-y-2">
+                        <label class="block text-white/90 text-sm font-semibold">Full Name</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <i class="fas fa-user text-white/60"></i>
+                            </div>
+                            <input 
+                                type="text" 
+                                id="name" 
+                                required 
+                                class="input-focus w-full pl-12 pr-4 py-4 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent"
+                                placeholder="Enter your full name"
+                            >
+                        </div>
+                    </div>
+
+                    <!-- Email Input -->
+                    <div class="space-y-2">
+                        <label class="block text-white/90 text-sm font-semibold">Email Address</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <i class="fas fa-envelope text-white/60"></i>
+                            </div>
+                            <input 
+                                type="email" 
+                                id="email" 
+                                required 
+                                class="input-focus w-full pl-12 pr-4 py-4 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent"
+                                placeholder="Enter your email"
+                            >
+                        </div>
+                    </div>
+
+                    <!-- Password Input -->
+                    <div class="space-y-2">
+                        <label class="block text-white/90 text-sm font-semibold">Password</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <i class="fas fa-lock text-white/60"></i>
+                            </div>
+                            <input 
+                                type="password" 
+                                id="password" 
+                                required 
+                                class="input-focus w-full pl-12 pr-12 py-4 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent"
+                                placeholder="Create a strong password"
+                                oninput="checkPasswordStrength()"
+                            >
+                            <button type="button" onclick="togglePassword()" class="absolute inset-y-0 right-0 pr-4 flex items-center">
+                                <i id="password-icon" class="fas fa-eye text-white/60 hover:text-white transition-colors"></i>
+                            </button>
+                        </div>
+                        <!-- Password Strength Indicator -->
+                        <div class="mt-2">
+                            <div class="flex space-x-1 mb-1">
+                                <div id="strength-1" class="h-1 flex-1 bg-white/20 rounded"></div>
+                                <div id="strength-2" class="h-1 flex-1 bg-white/20 rounded"></div>
+                                <div id="strength-3" class="h-1 flex-1 bg-white/20 rounded"></div>
+                                <div id="strength-4" class="h-1 flex-1 bg-white/20 rounded"></div>
+                            </div>
+                            <p id="strength-text" class="text-white/60 text-xs">Password strength</p>
+                        </div>
+                    </div>
+
+                    <!-- Confirm Password -->
+                    <div class="space-y-2">
+                        <label class="block text-white/90 text-sm font-semibold">Confirm Password</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <i class="fas fa-lock text-white/60"></i>
+                            </div>
+                            <input 
+                                type="password" 
+                                id="confirm-password" 
+                                required 
+                                class="input-focus w-full pl-12 pr-4 py-4 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent"
+                                placeholder="Confirm your password"
+                                oninput="checkPasswordMatch()"
+                            >
+                            <div id="password-match" class="absolute inset-y-0 right-0 pr-4 flex items-center">
+                                <i id="match-icon" class="hidden text-white/60"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Terms and Conditions -->
+                    <div class="flex items-start space-x-3">
+                        <input type="checkbox" id="terms" required class="w-4 h-4 text-emerald-600 bg-white/10 border-white/20 rounded focus:ring-emerald-500 mt-1">
+                        <label for="terms" class="text-white/80 text-sm">
+                            I agree to the <a href="#" class="text-white font-semibold hover:text-emerald-200 transition-colors">Terms of Service</a> 
+                            and <a href="#" class="text-white font-semibold hover:text-emerald-200 transition-colors">Privacy Policy</a>
+                        </label>
+                    </div>
+
+                    <!-- Sign Up Button -->
+                    <button 
+                        type="submit" 
+                        class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-2xl"
+                    >
+                        <i class="fas fa-user-plus mr-2"></i>Create Account
+                    </button>
+                </form>
+
+                <!-- Success/Error Messages -->
+                <div id="success-message" class="mt-4 p-4 bg-green-500/20 border border-green-500/30 text-green-200 rounded-xl hidden">
+                    <i class="fas fa-check-circle mr-2"></i>
+                    <span id="success-text"></span>
+                </div>
+
+                <div id="error-message" class="mt-4 p-4 bg-red-500/20 border border-red-500/30 text-red-200 rounded-xl hidden">
+                    <i class="fas fa-exclamation-circle mr-2"></i>
+                    <span id="error-text"></span>
+                </div>
+
+                <!-- Divider -->
+                <div class="my-6 flex items-center">
+                    <div class="flex-1 border-t border-white/20"></div>
+                    <span class="px-4 text-white/60 text-sm">or</span>
+                    <div class="flex-1 border-t border-white/20"></div>
+                </div>
+
+                <!-- Social Registration -->
+                <div class="space-y-3">
+                    <button class="w-full bg-white/10 hover:bg-white/20 text-white font-medium py-3 px-4 rounded-xl transition-all duration-300 border border-white/20">
+                        <i class="fab fa-google mr-2"></i>Sign up with Google
+                    </button>
+                    <button class="w-full bg-white/10 hover:bg-white/20 text-white font-medium py-3 px-4 rounded-xl transition-all duration-300 border border-white/20">
+                        <i class="fab fa-github mr-2"></i>Sign up with GitHub
+                    </button>
+                </div>
+
+                <!-- Sign In Link -->
+                <div class="mt-6 text-center">
+                    <p class="text-white/80">
+                        Already have an account? 
+                        <a href="/login" class="text-white font-semibold hover:text-emerald-200 transition-colors">Sign in</a>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="text-center mt-8 slide-in" style="animation-delay: 0.4s;">
+                <p class="text-white/60 text-sm">
+                    © 2024 FinTrack. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    function togglePassword() {
+        const passwordInput = document.getElementById('password');
+        const passwordIcon = document.getElementById('password-icon');
+        
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            passwordIcon.className = 'fas fa-eye-slash text-white/60 hover:text-white transition-colors';
+        } else {
+            passwordInput.type = 'password';
+            passwordIcon.className = 'fas fa-eye text-white/60 hover:text-white transition-colors';
+        }
+    }
+
+    function checkPasswordStrength() {
+        const password = document.getElementById('password').value;
+        const strengthBars = [1, 2, 3, 4].map(i => document.getElementById(`strength-${i}`));
+        const strengthText = document.getElementById('strength-text');
+        
+        // Reset all bars
+        strengthBars.forEach(bar => {
+            bar.className = 'h-1 flex-1 bg-white/20 rounded';
+        });
+        
+        if (password.length === 0) {
+            strengthText.textContent = 'Password strength';
+            return;
+        }
+        
+        let strength = 0;
+        if (password.length >= 8) strength++;
+        if (/[a-z]/.test(password)) strength++;
+        if (/[A-Z]/.test(password)) strength++;
+        if (/[0-9]/.test(password)) strength++;
+        if (/[^A-Za-z0-9]/.test(password)) strength++;
+        
+        const strengthLevels = ['Very Weak', 'Weak', 'Fair', 'Good', 'Strong'];
+        const strengthClasses = ['', 'strength-weak', 'strength-weak', 'strength-medium', 'strength-strong'];
+        
+        for (let i = 0; i < Math.min(strength, 4); i++) {
+            strengthBars[i].className = `h-1 flex-1 rounded ${strengthClasses[Math.min(strength, 4)]}`;
+        }
+        
+        strengthText.textContent = strengthLevels[Math.min(strength, 4)];
+        strengthText.className = `text-xs ${strength >= 3 ? 'text-green-300' : strength >= 2 ? 'text-yellow-300' : 'text-red-300'}`;
+    }
+
+    function checkPasswordMatch() {
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirm-password').value;
+        const matchIcon = document.getElementById('match-icon');
+        
+        if (confirmPassword.length === 0) {
+            matchIcon.className = 'hidden';
+            return;
+        }
+        
+        if (password === confirmPassword) {
+            matchIcon.className = 'fas fa-check text-green-400';
+        } else {
+            matchIcon.className = 'fas fa-times text-red-400';
+        }
+    }
+
+    document.getElementById('register-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirm-password').value;
+        
+        // Hide previous messages
+        document.getElementById('success-message').classList.add('hidden');
+        document.getElementById('error-message').classList.add('hidden');
+        
+        // Validate passwords match
+        if (password !== confirmPassword) {
+            showError('Passwords do not match');
+            return;
+        }
+        
+        try {
+            const response = await fetch('http://localhost:8081/api/v1/users/register', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({name, email, password})
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                showSuccess('Account created successfully! Redirecting to sign in...');
+                
+                // Success animation
+                const button = e.target.querySelector('button[type="submit"]');
+                button.innerHTML = '<i class="fas fa-check mr-2"></i>Account Created!';
+                button.className = button.className.replace('from-emerald-500 to-teal-500', 'from-green-500 to-green-600');
+                
+                setTimeout(() => {
+                    window.location.href = '/login';
+                }, 2000);
+            } else {
+                showError(data.error || 'Registration failed');
+            }
+        } catch (error) {
+            showError('Network error. Please try again.');
+        }
+    });
+
+    function showSuccess(message) {
+        document.getElementById('success-text').textContent = message;
+        document.getElementById('success-message').classList.remove('hidden');
+    }
+
+    function showError(message) {
+        document.getElementById('error-text').textContent = message;
+        document.getElementById('error-message').classList.remove('hidden');
+    }
+    </script>
+</body>
+</html>

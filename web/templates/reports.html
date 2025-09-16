@@ -1,0 +1,216 @@
+{{template "base" .}}
+{{define "content"}}
+<div class="space-y-6">
+    <div class="flex justify-between items-center">
+        <h1 class="text-3xl font-bold text-gray-900">Reports</h1>
+        <button id="generate-report-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+            <i class="fas fa-chart-bar mr-2"></i>Generate Monthly Report
+        </button>
+    </div>
+    
+    <div class="grid md:grid-cols-2 gap-6">
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h3 class="text-lg font-semibold mb-4">Monthly Summary</h3>
+            <div id="monthly-summary" class="space-y-3">
+                <div class="flex justify-between">
+                    <span>Total Expenses:</span>
+                    <span id="monthly-total" class="font-semibold">$0.00</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>Number of Transactions:</span>
+                    <span id="monthly-count" class="font-semibold">0</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>Average per Transaction:</span>
+                    <span id="monthly-average" class="font-semibold">$0.00</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h3 class="text-lg font-semibold mb-4">Top Categories</h3>
+            <div id="top-categories" class="space-y-2">
+                <p class="text-gray-500 text-center py-4">No data available</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <h3 class="text-lg font-semibold mb-4">Generated Reports</h3>
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">Report ID</th>
+                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">Type</th>
+                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">Period</th>
+                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">Generated</th>
+                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">Status</th>
+                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="reports-table" class="divide-y divide-gray-200">
+                    <tr>
+                        <td colspan="6" class="px-4 py-8 text-center text-gray-500">No reports generated yet</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <h3 class="text-lg font-semibold mb-4">Expense Trends</h3>
+        <div id="expense-chart" class="h-64 flex items-center justify-center text-gray-500">
+            Chart will be displayed here
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+        window.location.href = '/login';
+        return;
+    }
+    
+    loadReports();
+    loadExpenseSummary();
+    
+    document.getElementById('generate-report-btn').addEventListener('click', generateMonthlyReport);
+});
+
+async function loadReports() {
+    const token = localStorage.getItem('token');
+    try {
+        const response = await fetch('http://localhost:8085/api/v1/reports', {
+            headers: {'Authorization': `Bearer ${token}`}
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            renderReports(data.reports || []);
+        }
+    } catch (error) {
+        console.error('Error loading reports:', error);
+    }
+}
+
+async function loadExpenseSummary() {
+    const token = localStorage.getItem('token');
+    try {
+        const response = await fetch('http://localhost:8084/api/v1/expenses', {
+            headers: {'Authorization': `Bearer ${token}`}
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            const expenses = data.expenses || [];
+            updateMonthlySummary(expenses);
+            updateTopCategories(expenses);
+        }
+    } catch (error) {
+        console.error('Error loading expenses:', error);
+    }
+}
+
+function updateMonthlySummary(expenses) {
+    const now = new Date();
+    const currentMonth = expenses.filter(exp => {
+        const expDate = new Date(exp.date);
+        return expDate.getMonth() === now.getMonth() && expDate.getFullYear() === now.getFullYear();
+    });
+    
+    const total = currentMonth.reduce((sum, exp) => sum + exp.amount, 0);
+    const count = currentMonth.length;
+    const average = count > 0 ? total / count : 0;
+    
+    document.getElementById('monthly-total').textContent = `$${total.toFixed(2)}`;
+    document.getElementById('monthly-count').textContent = count;
+    document.getElementById('monthly-average').textContent = `$${average.toFixed(2)}`;
+}
+
+function updateTopCategories(expenses) {
+    const categoryTotals = {};
+    expenses.forEach(exp => {
+        categoryTotals[exp.category] = (categoryTotals[exp.category] || 0) + exp.amount;
+    });
+    
+    const sortedCategories = Object.entries(categoryTotals)
+        .sort(([,a], [,b]) => b - a)
+        .slice(0, 5);
+    
+    const container = document.getElementById('top-categories');
+    
+    if (sortedCategories.length > 0) {
+        container.innerHTML = sortedCategories.map(([category, total]) => `
+            <div class="flex justify-between items-center py-1">
+                <span>${category}</span>
+                <span class="font-semibold">$${total.toFixed(2)}</span>
+            </div>
+        `).join('');
+    } else {
+        container.innerHTML = '<p class="text-gray-500 text-center py-4">No data available</p>';
+    }
+}
+
+function renderReports(reports) {
+    const tbody = document.getElementById('reports-table');
+    
+    if (reports.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="px-4 py-8 text-center text-gray-500">No reports generated yet</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = reports.map(report => `
+        <tr>
+            <td class="px-4 py-3">${report.id}</td>
+            <td class="px-4 py-3">${report.type || 'Monthly'}</td>
+            <td class="px-4 py-3">${report.period || 'Current Month'}</td>
+            <td class="px-4 py-3">${new Date(report.created_at).toLocaleDateString()}</td>
+            <td class="px-4 py-3">
+                <span class="px-2 py-1 text-xs rounded-full ${report.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">
+                    ${report.status || 'Completed'}
+                </span>
+            </td>
+            <td class="px-4 py-3">
+                <button onclick="viewReport(${report.id})" class="text-blue-600 hover:text-blue-800">View</button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+async function generateMonthlyReport() {
+    const token = localStorage.getItem('token');
+    const button = document.getElementById('generate-report-btn');
+    
+    button.disabled = true;
+    button.textContent = 'Generating...';
+    
+    try {
+        const response = await fetch('http://localhost:8085/api/v1/reports/monthly', {
+            method: 'GET',
+            headers: {'Authorization': `Bearer ${token}`}
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            alert('Monthly report generated successfully!');
+            loadReports();
+        } else {
+            alert('Failed to generate report. Please try again.');
+        }
+    } catch (error) {
+        console.error('Error generating report:', error);
+        alert('Network error. Please try again.');
+    } finally {
+        button.disabled = false;
+        button.innerHTML = '<i class="fas fa-chart-bar mr-2"></i>Generate Monthly Report';
+    }
+}
+
+function viewReport(reportId) {
+    alert(`Viewing report ${reportId}. Report details would be displayed here.`);
+}
+</script>
+{{end}}

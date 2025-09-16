@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - FinTrack</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+    <nav class="bg-blue-600 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <a href="/" class="text-xl font-bold">FinTrack</a>
+                <div class="flex items-center space-x-4">
+                    <a href="/dashboard" class="hover:text-blue-200">Dashboard</a>
+                    <a href="/expenses" class="hover:text-blue-200">Expenses</a>
+                    <a href="/reports" class="hover:text-blue-200">Reports</a>
+                    <a href="/ai-chat" class="hover:text-blue-200">🤖 AI Assistant</a>
+                    <button onclick="logout()" class="bg-blue-700 px-3 py-1 rounded hover:bg-blue-800">Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
+            <a href="/expenses" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Add Expense</a>
+        </div>
+        
+        <div class="grid md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-sm font-medium text-gray-600">Total Expenses</h3>
+                <p class="text-2xl font-bold text-gray-900" id="total-expenses">$0.00</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-sm font-medium text-gray-600">This Month</h3>
+                <p class="text-2xl font-bold text-gray-900" id="month-expenses">$0.00</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-sm font-medium text-gray-600">Categories</h3>
+                <p class="text-2xl font-bold text-gray-900" id="total-categories">0</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-sm font-medium text-gray-600">Reports</h3>
+                <p class="text-2xl font-bold text-gray-900" id="total-reports">0</p>
+            </div>
+        </div>
+        
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-lg font-semibold mb-4">Recent Expenses</h3>
+                <div id="recent-expenses">
+                    <p class="text-gray-500 text-center py-8">No expenses found</p>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-lg font-semibold mb-4">Top Categories</h3>
+                <div id="expense-categories">
+                    <p class="text-gray-500 text-center py-8">No categories found</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+    function logout() {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/';
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        // Skip token check - allow direct access
+        
+        try {
+            const response = await fetch('http://localhost:8084/api/v1/expenses', {
+                headers: {'Authorization': `Bearer ${token}`}
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                updateDashboard(data.expenses || []);
+            }
+        } catch (error) {
+            console.error('Error loading dashboard:', error);
+        }
+    });
+
+    function updateDashboard(expenses) {
+        const total = expenses.reduce((sum, exp) => sum + exp.amount, 0);
+        const thisMonth = expenses.filter(exp => {
+            const expDate = new Date(exp.date);
+            const now = new Date();
+            return expDate.getMonth() === now.getMonth() && expDate.getFullYear() === now.getFullYear();
+        }).reduce((sum, exp) => sum + exp.amount, 0);
+        
+        const categories = [...new Set(expenses.map(exp => exp.category))];
+        
+        document.getElementById('total-expenses').textContent = `$${total.toFixed(2)}`;
+        document.getElementById('month-expenses').textContent = `$${thisMonth.toFixed(2)}`;
+        document.getElementById('total-categories').textContent = categories.length;
+        
+        const recentExpenses = expenses.slice(0, 5);
+        const recentContainer = document.getElementById('recent-expenses');
+        
+        if (recentExpenses.length > 0) {
+            recentContainer.innerHTML = recentExpenses.map(exp => `
+                <div class="flex justify-between items-center py-2 border-b">
+                    <div>
+                        <p class="font-medium">${exp.description}</p>
+                        <p class="text-sm text-gray-500">${exp.category}</p>
+                    </div>
+                    <span class="font-semibold">$${exp.amount.toFixed(2)}</span>
+                </div>
+            `).join('');
+        }
+        
+        const categoriesContainer = document.getElementById('expense-categories');
+        if (categories.length > 0) {
+            const categoryTotals = categories.map(cat => {
+                const total = expenses.filter(exp => exp.category === cat)
+                    .reduce((sum, exp) => sum + exp.amount, 0);
+                return {category: cat, total};
+            });
+            
+            categoriesContainer.innerHTML = categoryTotals.map(cat => `
+                <div class="flex justify-between items-center py-1">
+                    <span>${cat.category}</span>
+                    <span class="font-semibold">$${cat.total.toFixed(2)}</span>
+                </div>
+            `).join('');
+        }
+    }
+    </script>
+</body>
+</html>

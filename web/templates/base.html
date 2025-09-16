@@ -1,0 +1,43 @@
+{{define "base"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.title}} - FinTrack</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <nav class="bg-blue-600 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-4">
+                    <a href="/" class="text-xl font-bold">FinTrack</a>
+                    <div class="hidden md:flex space-x-4" id="nav-links">
+                        <a href="/dashboard" class="hover:text-blue-200">Dashboard</a>
+                        <a href="/expenses" class="hover:text-blue-200">Expenses</a>
+                        <a href="/reports" class="hover:text-blue-200">Reports</a>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span id="user-name" class="hidden"></span>
+                    <button id="logout-btn" class="bg-blue-700 px-3 py-1 rounded hover:bg-blue-800 hidden">Logout</button>
+                    <div id="auth-links" class="space-x-2">
+                        <a href="/login" class="hover:text-blue-200">Login</a>
+                        <a href="/register" class="bg-blue-700 px-3 py-1 rounded hover:bg-blue-800">Register</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        {{template "content" .}}
+    </main>
+
+    <script src="/static/js/auth.js"></script>
+    <script src="/static/js/api.js"></script>
+</body>
+</html>
+{{end}}

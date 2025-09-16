@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinTrack - Authentication</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .glass-effect { backdrop-filter: blur(20px); background: rgba(255, 255, 255, 0.25); }
+        .floating-animation { animation: float 6s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-20px); } }
+        .slide-in { animation: slideIn 0.8s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .input-focus { transition: all 0.3s ease; }
+        .input-focus:focus { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .tab-active { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .tab-inactive { background: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.7); }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800">
+    <!-- Animated Background -->
+    <div class="absolute inset-0 overflow-hidden">
+        <div class="absolute -top-40 -right-40 w-80 h-80 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 floating-animation"></div>
+        <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-yellow-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 floating-animation" style="animation-delay: 2s;"></div>
+        <div class="absolute top-40 left-40 w-80 h-80 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 floating-animation" style="animation-delay: 4s;"></div>
+    </div>
+
+    <div class="relative min-h-screen flex items-center justify-center px-4 py-8">
+        <div class="max-w-md w-full">
+            <!-- Logo Section -->
+            <div class="text-center mb-8 slide-in">
+                <div class="inline-flex items-center justify-center w-20 h-20 bg-white/20 backdrop-blur-lg rounded-2xl mb-4">
+                    <i class="fas fa-chart-line text-3xl text-white"></i>
+                </div>
+                <h1 class="text-4xl font-bold text-white mb-2">FinTrack</h1>
+                <p class="text-white/80 text-lg">Your Personal Finance Manager</p>
+            </div>
+
+            <!-- Auth Container -->
+            <div class="glass-effect rounded-3xl p-8 shadow-2xl border border-white/20 slide-in" style="animation-delay: 0.2s;">
+                <!-- Tab Navigation -->
+                <div class="flex mb-8 bg-white/10 rounded-xl p-1">
+                    <button onclick="switchTab('login')" id="login-tab" class="flex-1 py-3 px-4 rounded-lg font-semibold transition-all tab-active">
+                        <i class="fas fa-sign-in-alt mr-2"></i>Sign In
+                    </button>
+                    <button onclick="switchTab('register')" id="register-tab" class="flex-1 py-3 px-4 rounded-lg font-semibold transition-all tab-inactive">
+                        <i class="fas fa-user-plus mr-2"></i>Sign Up
+                    </button>
+                </div>
+
+                <!-- Login Form -->
+                <div id="login-form-container" class="space-y-6">
+                    <form id="login-form" class="space-y-6">
+                        <div class="space-y-2">
+                            <label class="block text-white/90 text-sm font-semibold">Email Address</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <i class="fas fa-envelope text-white/60"></i>
+                                </div>
+                                <input type="email" id="login-email" required class="input-focus w-full pl-12 pr-4 py-4 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent" placeholder="Enter your email">
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="block text-white/90 text-sm font-semibold">Password</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <i class="fas fa-lock text-white/60"></i>
+                                </div>
+                                <input type="password" id="login-password" required class="input-focus w-full pl-12 pr-12 py-4 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent" placeholder="Enter your password">
+                                <button type="button" onclick="togglePassword('login-password', 'login-eye')" class="absolute inset-y-0 right-0 pr-4 flex items-center">
+                                    <i id="login-eye" class="fas fa-eye text-white/60 hover:text-white transition-colors"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <label class="flex items-center">
+                                <input type="checkbox" class="w-4 h-4 text-purple-600 bg-white/10 border-white/20 rounded focus:ring-purple-500">
+                                <span class="ml-2 text-white/80 text-sm">Remember me</span>
+                            </label>
+                            <a href="#" class="text-white/80 hover:text-white text-sm font-medium transition-colors">Forgot password?</a>
+                        </div>
+
+                        <button type="submit" class="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
+                            <i class="fas fa-sign-in-alt mr-2"></i>Sign In
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Register Form -->
+                <div id="register-form-container" class="space-y-6 hidden">
+                    <form id="register-form" class="space-y-6">
+                        <div class="space-y-2">
+                            <label class="block text-white/90 text-sm font-semibold">Full Name</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <i class="fas fa-user text-white/60"></i>
+                                </div>
+                                <input type="text" id="register-name" required class="input-focus w-full pl-12 pr-4 py-4 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent" placeholder="Enter your full name">
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="block text-white/90 text-sm font-semibold">Email Address</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <i class="fas fa-envelope text-white/60"></i>
+                                </div>
+                                <input type="email" id="register-email" required class="input-focus w-full pl-12 pr-4 py-4 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent" placeholder="Enter your email">
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="block text-white/90 text-sm font-semibold">Password</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <i class="fas fa-lock text-white/60"></i>
+                                </div>
+                                <input type="password" id="register-password" required class="input-focus w-full pl-12 pr-12 py-4 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent" placeholder="Create a strong password">
+                                <button type="button" onclick="togglePassword('register-password', 'register-eye')" class="absolute inset-y-0 right-0 pr-4 flex items-center">
+                                    <i id="register-eye" class="fas fa-eye text-white/60 hover:text-white transition-colors"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="block text-white/90 text-sm font-semibold">Confirm Password</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <i class="fas fa-lock text-white/60"></i>
+                                </div>
+                                <input type="password" id="confirm-password" required class="input-focus w-full pl-12 pr-4 py-4 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent" placeholder="Confirm your password">
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-3">
+                            <input type="checkbox" id="terms" required class="w-4 h-4 text-emerald-600 bg-white/10 border-white/20 rounded focus:ring-emerald-500 mt-1">
+                            <label for="terms" class="text-white/80 text-sm">
+                                I agree to the <a href="#" class="text-white font-semibold hover:text-purple-200 transition-colors">Terms of Service</a> and <a href="#" class="text-white font-semibold hover:text-purple-200 transition-colors">Privacy Policy</a>
+                            </label>
+                        </div>
+
+                        <button type="submit" class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
+                            <i class="fas fa-user-plus mr-2"></i>Create Account
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Messages -->
+                <div id="success-message" class="mt-4 p-4 bg-green-500/20 border border-green-500/30 text-green-200 rounded-xl hidden">
+                    <i class="fas fa-check-circle mr-2"></i>
+                    <span id="success-text"></span>
+                </div>
+
+                <div id="error-message" class="mt-4 p-4 bg-red-500/20 border border-red-500/30 text-red-200 rounded-xl hidden">
+                    <i class="fas fa-exclamation-circle mr-2"></i>
+                    <span id="error-text"></span>
+                </div>
+
+                <!-- Social Login -->
+                <div class="mt-6">
+                    <div class="flex items-center mb-4">
+                        <div class="flex-1 border-t border-white/20"></div>
+                        <span class="px-4 text-white/60 text-sm">or continue with</span>
+                        <div class="flex-1 border-t border-white/20"></div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-3">
+                        <button class="bg-white/10 hover:bg-white/20 text-white font-medium py-3 px-4 rounded-xl transition-all duration-300 border border-white/20">
+                            <i class="fab fa-google mr-2"></i>Google
+                        </button>
+                        <button class="bg-white/10 hover:bg-white/20 text-white font-medium py-3 px-4 rounded-xl transition-all duration-300 border border-white/20">
+                            <i class="fab fa-github mr-2"></i>GitHub
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="text-center mt-8 slide-in" style="animation-delay: 0.4s;">
+                <p class="text-white/60 text-sm">© 2024 FinTrack. All rights reserved.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    function switchTab(tab) {
+        const loginTab = document.getElementById('login-tab');
+        const registerTab = document.getElementById('register-tab');
+        const loginForm = document.getElementById('login-form-container');
+        const registerForm = document.getElementById('register-form-container');
+
+        if (tab === 'login') {
+            loginTab.className = 'flex-1 py-3 px-4 rounded-lg font-semibold transition-all tab-active';
+            registerTab.className = 'flex-1 py-3 px-4 rounded-lg font-semibold transition-all tab-inactive';
+            loginForm.classList.remove('hidden');
+            registerForm.classList.add('hidden');
+        } else {
+            loginTab.className = 'flex-1 py-3 px-4 rounded-lg font-semibold transition-all tab-inactive';
+            registerTab.className = 'flex-1 py-3 px-4 rounded-lg font-semibold transition-all tab-active';
+            loginForm.classList.add('hidden');
+            registerForm.classList.remove('hidden');
+        }
+        
+        hideMessages();
+    }
+
+    function togglePassword(inputId, iconId) {
+        const input = document.getElementById(inputId);
+        const icon = document.getElementById(iconId);
+        
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.className = 'fas fa-eye-slash text-white/60 hover:text-white transition-colors';
+        } else {
+            input.type = 'password';
+            icon.className = 'fas fa-eye text-white/60 hover:text-white transition-colors';
+        }
+    }
+
+    function hideMessages() {
+        document.getElementById('success-message').classList.add('hidden');
+        document.getElementById('error-message').classList.add('hidden');
+    }
+
+    function showSuccess(message) {
+        hideMessages();
+        document.getElementById('success-text').textContent = message;
+        document.getElementById('success-message').classList.remove('hidden');
+    }
+
+    function showError(message) {
+        hideMessages();
+        document.getElementById('error-text').textContent = message;
+        document.getElementById('error-message').classList.remove('hidden');
+    }
+
+    // Login Form Handler
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
+        
+        try {
+            const response = await fetch('http://localhost:8001/api/v1/users/login', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({email, password})
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(data.user));
+                showSuccess('Login successful! Redirecting...');
+                setTimeout(() => window.location.href = '/dashboard', 1000);
+            } else {
+                showError(data.error || 'Login failed');
+            }
+        } catch (error) {
+            showError('Network error. Please try again.');
+        }
+    });
+
+    // Register Form Handler
+    document.getElementById('register-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = document.getElementById('register-name').value;
+        const email = document.getElementById('register-email').value;
+        const password = document.getElementById('register-password').value;
+        const confirmPassword = document.getElementById('confirm-password').value;
+        
+        if (password !== confirmPassword) {
+            showError('Passwords do not match');
+            return;
+        }
+        
+        try {
+            const response = await fetch('http://localhost:8001/api/v1/users/register', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({name, email, password})
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                showSuccess('Account created successfully! You can now sign in.');
+                setTimeout(() => switchTab('login'), 2000);
+            } else {
+                showError(data.error || 'Registration failed');
+            }
+        } catch (error) {
+            showError('Network error. Please try again.');
+        }
+    });
+    </script>
+</body>
+</html>

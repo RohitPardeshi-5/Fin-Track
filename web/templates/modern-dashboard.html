@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - FinTrack</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .glass-effect { backdrop-filter: blur(10px); background: rgba(255, 255, 255, 0.1); }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        .animate-fade-in { animation: fadeIn 0.6s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .stat-card { background: linear-gradient(145deg, #ffffff, #f0f0f0); }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-indigo-50 via-white to-purple-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="glass-effect border-b border-white/20 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 gradient-bg rounded-xl flex items-center justify-center">
+                        <i class="fas fa-chart-line text-white text-lg"></i>
+                    </div>
+                    <h1 class="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">FinTrack</h1>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <a href="/dashboard" class="flex items-center space-x-2 px-4 py-2 rounded-xl bg-indigo-100 text-indigo-700 font-medium">
+                        <i class="fas fa-home"></i><span>Dashboard</span>
+                    </a>
+                    <a href="/expenses" class="flex items-center space-x-2 px-4 py-2 rounded-xl hover:bg-gray-100 text-gray-700 transition-colors">
+                        <i class="fas fa-receipt"></i><span>Expenses</span>
+                    </a>
+                    <a href="/reports" class="flex items-center space-x-2 px-4 py-2 rounded-xl hover:bg-gray-100 text-gray-700 transition-colors">
+                        <i class="fas fa-chart-bar"></i><span>Reports</span>
+                    </a>
+                    <a href="/ai-chat" class="flex items-center space-x-2 px-4 py-2 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 transition-all">
+                        <i class="fas fa-robot"></i><span>AI Assistant</span>
+                    </a>
+                    <button onclick="logout()" class="flex items-center space-x-2 px-4 py-2 rounded-xl bg-red-100 text-red-700 hover:bg-red-200 transition-colors">
+                        <i class="fas fa-sign-out-alt"></i><span>Logout</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-6 py-8">
+        <!-- Header Section -->
+        <div class="animate-fade-in mb-8">
+            <div class="flex justify-between items-center mb-2">
+                <h1 class="text-4xl font-bold text-gray-800">Financial Dashboard</h1>
+                <button onclick="window.location.href='/expenses'" class="px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl hover:from-indigo-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl">
+                    <i class="fas fa-plus mr-2"></i>Add Expense
+                </button>
+            </div>
+            <p class="text-gray-600 text-lg">Track your spending and achieve your financial goals</p>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 animate-fade-in">
+            <div class="stat-card rounded-2xl p-6 shadow-lg card-hover border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm font-medium">Total Expenses</p>
+                        <p class="text-3xl font-bold text-gray-800" id="total-expenses">0.00</p>
+                    </div>
+                    <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-wallet text-white text-xl"></i>
+                    </div>
+                </div>
+                <div class="mt-4 flex items-center text-sm">
+                    <span class="text-green-500 font-medium">+2.5%</span>
+                    <span class="text-gray-500 ml-1">from last month</span>
+                </div>
+            </div>
+
+            <div class="stat-card rounded-2xl p-6 shadow-lg card-hover border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm font-medium">This Month</p>
+                        <p class="text-3xl font-bold text-gray-800" id="month-expenses">0.00</p>
+                    </div>
+                    <div class="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-calendar-alt text-white text-xl"></i>
+                    </div>
+                </div>
+                <div class="mt-4 flex items-center text-sm">
+                    <span class="text-blue-500 font-medium">Current month</span>
+                </div>
+            </div>
+
+            <div class="stat-card rounded-2xl p-6 shadow-lg card-hover border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm font-medium">Categories</p>
+                        <p class="text-3xl font-bold text-gray-800" id="total-categories">0</p>
+                    </div>
+                    <div class="w-12 h-12 bg-gradient-to-br from-purple-400 to-purple-600 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-tags text-white text-xl"></i>
+                    </div>
+                </div>
+                <div class="mt-4 flex items-center text-sm">
+                    <span class="text-purple-500 font-medium">Active categories</span>
+                </div>
+            </div>
+
+            <div class="stat-card rounded-2xl p-6 shadow-lg card-hover border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm font-medium">Avg/Day</p>
+                        <p class="text-3xl font-bold text-gray-800" id="avg-daily">0.00</p>
+                    </div>
+                    <div class="w-12 h-12 bg-gradient-to-br from-orange-400 to-orange-600 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-chart-line text-white text-xl"></i>
+                    </div>
+                </div>
+                <div class="mt-4 flex items-center text-sm">
+                    <span class="text-orange-500 font-medium">Daily average</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts and Recent Activity -->
+        <div class="grid lg:grid-cols-3 gap-8 animate-fade-in">
+            <!-- Expense Chart -->
+            <div class="lg:col-span-2 bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-bold text-gray-800">Expense Categories</h3>
+                    <div class="flex space-x-2">
+                        <button class="px-3 py-1 bg-indigo-100 text-indigo-600 rounded-lg text-sm font-medium">7D</button>
+                        <button class="px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-sm">30D</button>
+                        <button class="px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-sm">90D</button>
+                    </div>
+                </div>
+                <div class="h-64">
+                    <canvas id="expenseChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Recent Transactions -->
+            <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+                <h3 class="text-xl font-bold text-gray-800 mb-6">Recent Transactions</h3>
+                <div id="recent-expenses" class="space-y-4">
+                    <div class="flex items-center justify-center py-12 text-gray-400">
+                        <div class="text-center">
+                            <i class="fas fa-receipt text-4xl mb-3"></i>
+                            <p>No transactions yet</p>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="window.location.href='/expenses'" class="w-full mt-4 py-2 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 hover:border-indigo-300 hover:text-indigo-500 transition-colors">
+                    <i class="fas fa-plus mr-2"></i>Add New Expense
+                </button>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="mt-8 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl p-8 text-white animate-fade-in">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-2xl font-bold mb-2">Ready to optimize your finances?</h3>
+                    <p class="text-indigo-100">Get AI-powered insights about your spending patterns</p>
+                </div>
+                <button onclick="window.location.href='/ai-chat'" class="px-6 py-3 bg-white text-indigo-600 rounded-xl font-semibold hover:bg-gray-50 transition-colors">
+                    <i class="fas fa-robot mr-2"></i>Ask AI Assistant
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+    let expenseChart;
+
+    function logout() {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        await loadExpenses();
+    });
+
+    async function loadExpenses() {
+        try {
+            const response = await fetch('http://localhost:8002/api/v1/expenses');
+            if (response.ok) {
+                const data = await response.json();
+                updateDashboard(data.expenses || []);
+            }
+        } catch (error) {
+            console.error('Error loading dashboard:', error);
+        }
+    }
+
+    function updateDashboard(expenses) {
+        const total = expenses.reduce((sum, exp) => sum + exp.amount, 0);
+        const thisMonth = expenses.filter(exp => {
+            const expDate = new Date(exp.date);
+            const now = new Date();
+            return expDate.getMonth() === now.getMonth() && expDate.getFullYear() === now.getFullYear();
+        }).reduce((sum, exp) => sum + exp.amount, 0);
+        
+        const categories = [...new Set(expenses.map(exp => exp.category))];
+        const avgDaily = expenses.length > 0 ? total / 30 : 0;
+        
+        document.getElementById('total-expenses').textContent = total.toFixed(2);
+        document.getElementById('month-expenses').textContent = thisMonth.toFixed(2);
+        document.getElementById('total-categories').textContent = categories.length;
+        document.getElementById('avg-daily').textContent = avgDaily.toFixed(2);
+        
+        updateRecentExpenses(expenses.slice(-5).reverse());
+        updateExpenseChart(expenses);
+    }
+
+    function updateRecentExpenses(expenses) {
+        const container = document.getElementById('recent-expenses');
+        if (expenses.length === 0) return;
+        
+        container.innerHTML = expenses.map(exp => `
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-indigo-400 to-purple-500 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-${getCategoryIcon(exp.category)} text-white text-sm"></i>
+                    </div>
+                    <div>
+                        <p class="font-medium text-gray-800">${exp.description}</p>
+                        <p class="text-sm text-gray-500">${exp.category}</p>
+                    </div>
+                </div>
+                <span class="font-bold text-gray-800">${exp.amount.toFixed(2)}</span>
+            </div>
+        `).join('');
+    }
+
+    function updateExpenseChart(expenses) {
+        const categoryTotals = {};
+        expenses.forEach(exp => {
+            categoryTotals[exp.category] = (categoryTotals[exp.category] || 0) + exp.amount;
+        });
+
+        const ctx = document.getElementById('expenseChart').getContext('2d');
+        
+        if (expenseChart) expenseChart.destroy();
+        
+        expenseChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(categoryTotals),
+                datasets: [{
+                    data: Object.values(categoryTotals),
+                    backgroundColor: [
+                        '#6366f1', '#8b5cf6', '#ec4899', '#f59e0b',
+                        '#10b981', '#3b82f6', '#ef4444', '#6b7280'
+                    ],
+                    borderWidth: 0,
+                    hoverOffset: 10
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { padding: 20, usePointStyle: true }
+                    }
+                }
+            }
+        });
+    }
+
+    function getCategoryIcon(category) {
+        const icons = {
+            'food': 'utensils', 'transport': 'car', 'shopping': 'shopping-bag',
+            'entertainment': 'film', 'health': 'heartbeat', 'education': 'book',
+            'cloths': 'tshirt', 'clothing': 'tshirt'
+        };
+        return icons[category.toLowerCase()] || 'receipt';
+    }
+    </script>
+</body>
+</html>

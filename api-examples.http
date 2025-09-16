@@ -1,0 +1,67 @@
+# FinTrack API Examples
+# Use with REST Client extension in VS Code or similar tools
+
+### Health Check
+GET http://localhost:8081/healthz
+
+### Register User
+POST http://localhost:8081/api/v1/users/register
+Content-Type: application/json
+
+{
+  "email": "john@example.com",
+  "password": "password123",
+  "name": "John Doe"
+}
+
+### Login User
+POST http://localhost:8081/api/v1/users/login
+Content-Type: application/json
+
+{
+  "email": "john@example.com",
+  "password": "password123"
+}
+
+### Create Expense (requires JWT token from login)
+POST http://localhost:8082/api/v1/expenses
+Content-Type: application/json
+Authorization: Bearer YOUR_JWT_TOKEN_HERE
+
+{
+  "amount": 25.50,
+  "description": "Lunch at restaurant",
+  "category": "Food",
+  "date": "2024-01-15"
+}
+
+### Get Expenses
+GET http://localhost:8082/api/v1/expenses?limit=10&offset=0
+Authorization: Bearer YOUR_JWT_TOKEN_HERE
+
+### Update Expense
+PUT http://localhost:8082/api/v1/expenses/1
+Content-Type: application/json
+Authorization: Bearer YOUR_JWT_TOKEN_HERE
+
+{
+  "amount": 30.00,
+  "description": "Updated lunch expense",
+  "category": "Food",
+  "date": "2024-01-15"
+}
+
+### Delete Expense
+DELETE http://localhost:8082/api/v1/expenses/1
+Authorization: Bearer YOUR_JWT_TOKEN_HERE
+
+### Generate Monthly Report
+GET http://localhost:8083/api/v1/reports/monthly?year=2024&month=1
+Authorization: Bearer YOUR_JWT_TOKEN_HERE
+
+### Get All Reports
+GET http://localhost:8083/api/v1/reports?type=monthly
+Authorization: Bearer YOUR_JWT_TOKEN_HERE
+
+### Metrics Endpoint
+GET http://localhost:8081/metrics
